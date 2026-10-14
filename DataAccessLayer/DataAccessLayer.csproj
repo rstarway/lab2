@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.csproj" />
     <PackageReference Include="EntityFramework" Version="6.5.2" />
+    <PackageReference Include="Dapper" Version="2.1.89" />
   </ItemGroup>
 
   <PropertyGroup>
