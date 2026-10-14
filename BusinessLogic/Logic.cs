@@ -1,9 +1,21 @@
+using DataAccessLayer;
+
 namespace Model
 {
     public class Logic
     {
-        List<Record> list = new List<Record>();
-        int next = 1;
+        IRepository<Record> repository;
+
+        /// <summary>
+        /// Создает репозиторий для работы с записями.
+        /// </summary>
+        public Logic()
+        {
+            if (Environment.GetEnvironmentVariable("LAB1_REPOSITORY") == "Dapper")
+                repository = new DapperRepository<Record>();
+            else
+                repository = new EntityRepository<Record>();
+        }
 
         /// <summary>
         /// Общее количество холодильных камер (номера от 1 до cells).
@@ -23,6 +35,7 @@ namespace Model
         {
             if (cell < 1 || cell > cells)
                 return false;
+            List<Record> list = repository.ReadAll();
             for (int i = 0; i < list.Count; i++)
             {
                 if (list[i].Cell == cell)
@@ -30,15 +43,12 @@ namespace Model
             }
 
             Record r = new Record();
-            r.Id = next;
             r.Name = name;
             r.Age = age;
             r.Date = date;
             r.Cause = cause;
             r.Cell = cell;
-            list.Add(r);
-            next++;
-            return true;
+            return repository.Add(r);
         }
 
         /// <summary>
@@ -46,7 +56,7 @@ namespace Model
         /// </summary>
         public List<Record> GetAll()
         {
-            return list;
+            return repository.ReadAll();
         }
 
         /// <summary>
@@ -63,6 +73,7 @@ namespace Model
         {
             if (cell < 1 || cell > cells)
                 return false;
+            List<Record> list = repository.ReadAll();
             for (int i = 0; i < list.Count; i++)
             {
                 if (list[i].Cell == cell && list[i].Id != id)
@@ -78,7 +89,7 @@ namespace Model
                     list[i].Date = date;
                     list[i].Cause = cause;
                     list[i].Cell = cell;
-                    return true;
+                    return repository.Update(list[i]);
                 }
             }
             return false;
@@ -91,15 +102,7 @@ namespace Model
         /// <returns>true, если запись удалена; false, если такой записи нет.</returns>
         public bool Delete(int id)
         {
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Id == id)
-                {
-                    list.RemoveAt(i);
-                    return true;
-                }
-            }
-            return false;
+            return repository.Delete(id);
         }
 
         /// <summary>
@@ -109,6 +112,7 @@ namespace Model
         /// <returns>Список найденных записей.</returns>
         public List<Record> FindByCause(string cause)
         {
+            List<Record> list = repository.ReadAll();
             List<Record> res = new List<Record>();
             foreach (Record r in list)
             {
@@ -123,6 +127,7 @@ namespace Model
         /// </summary>
         public List<int> BusyCells()
         {
+            List<Record> list = repository.ReadAll();
             List<int> res = new List<int>();
             foreach (Record r in list)
                 res.Add(r.Cell);
@@ -135,6 +140,7 @@ namespace Model
         /// </summary>
         public List<int> FreeCells()
         {
+            List<Record> list = repository.ReadAll();
             List<int> res = new List<int>();
             for (int i = 1; i <= cells; i++)
             {
