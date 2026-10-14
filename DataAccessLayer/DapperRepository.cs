@@ -1,6 +1,6 @@
 using Dapper;
 using Model;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Reflection;
 
 namespace DataAccessLayer
@@ -18,7 +18,6 @@ namespace DataAccessLayer
                 key = "Id";
             using (DBContext db = new DBContext())
             {
-                db.Database.CreateIfNotExists();
                 str = db.Database.Connection.ConnectionString;
             }
         }
@@ -42,16 +41,16 @@ namespace DataAccessLayer
                     values += "@" + x.Name;
                 }
             }
-            using (SqlConnection con = new SqlConnection(str))
+            using (SQLiteConnection con = new SQLiteConnection(str))
             {
-                r.ID = con.ExecuteScalar<int>("insert into [" + table + "] (" + columns + ") output inserted.[" + key + "] values (" + values + ")", r);
+                r.ID = con.ExecuteScalar<int>("insert into [" + table + "] (" + columns + ") values (" + values + "); select last_insert_rowid();", r);
                 return r.ID > 0;
             }
         }
 
         public bool Delete(int id)
         {
-            using (SqlConnection con = new SqlConnection(str))
+            using (SQLiteConnection con = new SQLiteConnection(str))
             {
                 return con.Execute("delete from [" + table + "] where [" + key + "] = @id", new { id }) > 0;
             }
@@ -59,7 +58,7 @@ namespace DataAccessLayer
 
         public List<T> ReadAll()
         {
-            using (SqlConnection con = new SqlConnection(str))
+            using (SQLiteConnection con = new SQLiteConnection(str))
             {
                 return new List<T>(con.Query<T>("select * from [" + table + "] order by [" + key + "]"));
             }
@@ -67,7 +66,7 @@ namespace DataAccessLayer
 
         public T ReadById(int id)
         {
-            using (SqlConnection con = new SqlConnection(str))
+            using (SQLiteConnection con = new SQLiteConnection(str))
             {
                 foreach (T r in con.Query<T>("select * from [" + table + "] where [" + key + "] = @id", new { id }))
                     return r;
@@ -91,7 +90,7 @@ namespace DataAccessLayer
             }
             DynamicParameters p = new DynamicParameters(r);
             p.Add("key", r.ID);
-            using (SqlConnection con = new SqlConnection(str))
+            using (SQLiteConnection con = new SQLiteConnection(str))
             {
                 return con.Execute("update [" + table + "] set " + values + " where [" + key + "] = @key", p) > 0;
             }
