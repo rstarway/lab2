@@ -1,3 +1,4 @@
+using BusinessLogic;
 using Model;
 
 namespace lab1
@@ -9,6 +10,7 @@ namespace lab1
         public Form1()
         {
             InitializeComponent();
+            Fill(logic.GetAll());
         }
 
         void Fill(List<Record> list)
@@ -16,7 +18,7 @@ namespace lab1
             dataGridView1.Rows.Clear();
             foreach (Record r in list)
             {
-                dataGridView1.Rows.Add(r.Id, r.Name, r.Age, r.Date.ToShortDateString(), r.Cause, r.Cell);
+                dataGridView1.Rows.Add(r.ID, r.Name, r.Age, r.Date.ToShortDateString(), r.Cause, r.Cell);
             }
         }
 
@@ -44,7 +46,7 @@ namespace lab1
             Record r = null;
             foreach (Record x in logic.GetAll())
             {
-                if (x.Id == id)
+                if (x.ID == id)
                     r = x;
             }
 

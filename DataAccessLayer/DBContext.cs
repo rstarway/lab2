@@ -4,35 +4,28 @@ using System.Data.SQLite;
 
 namespace DataAccessLayer
 {
+    /// <summary>
+    /// Контекст Entity Framework для базы SQLite.
+    /// </summary>
     [DbConfigurationType(typeof(DBConfig))]
     public class DBContext : DbContext
     {
-        public DBContext() : base(new SQLiteConnection("Data Source=:memory:"), true)
+        /// <summary>
+        /// Подключается к файлу базы из DBConnection.
+        /// </summary>
+        public DBContext() : base(new SQLiteConnection(DBConnection.str), true)
         {
             Database.SetInitializer<DBContext>(null);
-
-            string str = Environment.GetEnvironmentVariable("LAB1_DATABASE");
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "lab1");
-                Directory.CreateDirectory(path);
-                SQLiteConnectionStringBuilder con = new SQLiteConnectionStringBuilder();
-                con.DataSource = Path.Combine(path, "lab1.db");
-                str = con.ConnectionString;
-            }
-            Database.Connection.ConnectionString = str;
-
-            SQLiteConnection connection = (SQLiteConnection)Database.Connection;
-            connection.Open();
-            using (SQLiteCommand command = new SQLiteCommand("create table if not exists Records (Id integer primary key autoincrement, Name text, Age integer not null, Date datetime not null, Cause text, Cell integer not null)", connection))
-            {
-                command.ExecuteNonQuery();
-            }
-            connection.Close();
         }
 
+        /// <summary>
+        /// Таблица записей.
+        /// </summary>
         public DbSet<Record> Records { get; set; }
 
+        /// <summary>
+        /// Связывает класс Record с таблицей Records.
+        /// </summary>
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Record>().ToTable("Records", "main");

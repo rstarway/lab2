@@ -2,12 +2,25 @@ using Model;
 
 namespace DataAccessLayer
 {
+    /// <summary>
+    /// Репозиторий через Entity Framework.
+    /// </summary>
+    /// <typeparam name="T">Тип объекта, у которого есть ID</typeparam>
     public class EntityRepository<T> : IRepository<T> where T : class, IDomainObject
     {
+        /// <summary>
+        /// Создает таблицу в базе, если ее еще нет.
+        /// </summary>
+        public EntityRepository()
+        {
+            DBConnection.CreateTable();
+        }
+
+        /// <summary>
+        /// Добавляет объект в базу.
+        /// </summary>
         public bool Add(T r)
         {
-            if (r == null)
-                return false;
             using (DBContext db = new DBContext())
             {
                 db.Set<T>().Add(r);
@@ -15,62 +28,57 @@ namespace DataAccessLayer
             }
         }
 
+        /// <summary>
+        /// Удаляет объект с указанным ID.
+        /// </summary>
         public bool Delete(int id)
         {
             using (DBContext db = new DBContext())
             {
-                List<T> list = new List<T>(db.Set<T>());
-                foreach (T r in list)
-                {
-                    if (r.ID == id)
-                    {
-                        db.Set<T>().Remove(r);
-                        return db.SaveChanges() > 0;
-                    }
-                }
+                T r = db.Set<T>().Find(id);
+                if (r == null)
+                    return false;
+                db.Set<T>().Remove(r);
+                return db.SaveChanges() > 0;
             }
-            return false;
         }
 
+        /// <summary>
+        /// Возвращает все объекты.
+        /// </summary>
         public List<T> ReadAll()
         {
-            List<T> res = new List<T>();
             using (DBContext db = new DBContext())
             {
-                foreach (T r in db.Set<T>())
-                    res.Add(r);
+                return new List<T>(db.Set<T>());
             }
-            return res;
         }
 
+        /// <summary>
+        /// Возвращает объект с указанным ID или null.
+        /// </summary>
         public T ReadById(int id)
         {
-            foreach (T r in ReadAll())
-            {
-                if (r.ID == id)
-                    return r;
-            }
-            return null;
-        }
-
-        public bool Update(T r)
-        {
-            if (r == null)
-                return false;
             using (DBContext db = new DBContext())
             {
-                List<T> list = new List<T>(db.Set<T>());
-                foreach (T x in list)
-                {
-                    if (x.ID == r.ID)
-                    {
-                        db.Entry(x).CurrentValues.SetValues(r);
-                        db.SaveChanges();
-                        return true;
-                    }
-                }
+                return db.Set<T>().Find(id);
             }
-            return false;
+        }
+
+        /// <summary>
+        /// Сохраняет изменения объекта.
+        /// </summary>
+        public bool Update(T r)
+        {
+            using (DBContext db = new DBContext())
+            {
+                T x = db.Set<T>().Find(r.ID);
+                if (x == null)
+                    return false;
+                db.Entry(x).CurrentValues.SetValues(r);
+                db.SaveChanges();
+                return true;
+            }
         }
     }
 }

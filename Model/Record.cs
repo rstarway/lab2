@@ -1,18 +1,38 @@
 namespace Model
 {
+    /// <summary>
+    /// Запись о поступлении тела в морг.
+    /// </summary>
     public class Record : IDomainObject
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public DateTime Date { get; set; }
-        public string Cause { get; set; }
-        public int Cell { get; set; }
+        /// <summary>
+        /// Номер записи.
+        /// </summary>
+        public int ID { get; set; }
 
-        int IDomainObject.ID
-        {
-            get { return Id; }
-            set { Id = value; }
-        }
+        /// <summary>
+        /// ФИО.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Возраст.
+        /// </summary>
+        public int Age { get; set; }
+
+        /// <summary>
+        /// Дата поступления.
+        /// </summary>
+        public DateTime Date { get; set; }
+
+        /// <summary>
+        /// Причина смерти.
+        /// </summary>
+        public string Cause { get; set; }
+
+        /// <summary>
+        /// Номер холодильной камеры.
+        /// </summary>
+        public int Cell { get; set; }
     }
 }
