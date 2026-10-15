@@ -21,6 +21,8 @@ namespace DataAccessLayer
         /// </summary>
         public bool Add(T r)
         {
+            if (r == null)
+                return false;
             using (DBContext db = new DBContext())
             {
                 db.Set<T>().Add(r);
@@ -70,6 +72,8 @@ namespace DataAccessLayer
         /// </summary>
         public bool Update(T r)
         {
+            if (r == null)
+                return false;
             using (DBContext db = new DBContext())
             {
                 T x = db.Set<T>().Find(r.ID);

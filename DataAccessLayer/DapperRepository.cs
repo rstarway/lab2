@@ -23,6 +23,8 @@ namespace DataAccessLayer
         /// </summary>
         public bool Add(T r)
         {
+            if (r == null)
+                return false;
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
                 string sql = "insert into Records (Name, Age, Date, Cause, Cell) values (@Name, @Age, @Date, @Cause, @Cell); select last_insert_rowid();";
@@ -69,6 +71,8 @@ namespace DataAccessLayer
         /// </summary>
         public bool Update(T r)
         {
+            if (r == null)
+                return false;
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
                 string sql = "update Records set Name = @Name, Age = @Age, Date = @Date, Cause = @Cause, Cell = @Cell where ID = @ID";
