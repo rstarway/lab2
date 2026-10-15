@@ -1,3 +1,4 @@
+using BusinessLogic;
 using Model;
 
 Logic logic = new Logic();
@@ -11,7 +12,7 @@ while (true)
     if (list.Count == 0)
         Console.WriteLine("Записей нет");
     foreach (Record r in list)
-        Console.WriteLine(r.Id + " | " + r.Name + " | " + r.Age + " | " + r.Date.ToShortDateString() + " | " + r.Cause + " | камера " + r.Cell);
+        Console.WriteLine(r.ID + " | " + r.Name + " | " + r.Age + " | " + r.Date.ToShortDateString() + " | " + r.Cause + " | камера " + r.Cell);
     Console.WriteLine();
     Console.WriteLine("Свободные камеры: " + string.Join(", ", logic.FreeCells()));
     Console.WriteLine("===================================");
@@ -142,7 +143,7 @@ while (true)
             if (res.Count == 0)
                 Console.WriteLine("Ничего не найдено");
             foreach (Record r in res)
-                Console.WriteLine(r.Id + " | " + r.Name + " | " + r.Age + " | " + r.Date.ToShortDateString() + " | " + r.Cause + " | камера " + r.Cell);
+                Console.WriteLine(r.ID + " | " + r.Name + " | " + r.Age + " | " + r.Date.ToShortDateString() + " | " + r.Cause + " | камера " + r.Cell);
             break;
 
         default:

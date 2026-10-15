@@ -6,8 +6,14 @@ using System.Data.SQLite.EF6;
 
 namespace DataAccessLayer
 {
+    /// <summary>
+    /// Настройка Entity Framework: подключает провайдер SQLite.
+    /// </summary>
     public class DBConfig : DbConfiguration
     {
+        /// <summary>
+        /// Регистрирует SQLite, чтобы EF мог с ней работать.
+        /// </summary>
         public DBConfig()
         {
             DbProviderFactories.RegisterFactory("System.Data.SQLite", SQLiteFactory.Instance);

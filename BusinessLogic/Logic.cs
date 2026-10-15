@@ -1,7 +1,11 @@
 using DataAccessLayer;
+using Model;
 
-namespace Model
+namespace BusinessLogic
 {
+    /// <summary>
+    /// Бизнес-логика учета поступлений: работает с записями через репозиторий.
+    /// </summary>
     public class Logic
     {
         IRepository<Record> repository;
@@ -11,10 +15,8 @@ namespace Model
         /// </summary>
         public Logic()
         {
-            if (Environment.GetEnvironmentVariable("LAB1_REPOSITORY") == "Dapper")
-                repository = new DapperRepository<Record>();
-            else
-                repository = new EntityRepository<Record>();
+            repository = new EntityRepository<Record>();
+            // repository = new DapperRepository<Record>();
         }
 
         /// <summary>
@@ -76,23 +78,19 @@ namespace Model
             List<Record> list = repository.ReadAll();
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Cell == cell && list[i].Id != id)
+                if (list[i].Cell == cell && list[i].ID != id)
                     return false;
             }
 
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Id == id)
-                {
-                    list[i].Name = name;
-                    list[i].Age = age;
-                    list[i].Date = date;
-                    list[i].Cause = cause;
-                    list[i].Cell = cell;
-                    return repository.Update(list[i]);
-                }
-            }
-            return false;
+            Record r = repository.ReadById(id);
+            if (r == null)
+                return false;
+            r.Name = name;
+            r.Age = age;
+            r.Date = date;
+            r.Cause = cause;
+            r.Cell = cell;
+            return repository.Update(r);
         }
 
         /// <summary>
