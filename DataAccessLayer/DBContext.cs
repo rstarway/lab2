@@ -1,15 +1,14 @@
 using Model;
-using System.Data.Common;
 using System.Data.Entity;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 
 namespace DataAccessLayer
 {
+    [DbConfigurationType(typeof(DBConfig))]
     public class DBContext : DbContext
     {
-        public DBContext() : base("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=lab1;Integrated Security=True;")
+        public DBContext() : base(new SQLiteConnection("Data Source=:memory:"), true)
         {
-            DbProviderFactories.RegisterFactory("System.Data.SqlClient", SqlClientFactory.Instance);
             Database.SetInitializer<DBContext>(null);
 
             string str = Environment.GetEnvironmentVariable("LAB1_DATABASE");
@@ -17,16 +16,26 @@ namespace DataAccessLayer
             {
                 string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "lab1");
                 Directory.CreateDirectory(path);
-                SqlConnectionStringBuilder con = new SqlConnectionStringBuilder();
-                con.DataSource = "(localdb)\\MSSQLLocalDB";
-                con.InitialCatalog = "lab1";
-                con.AttachDBFilename = Path.Combine(path, "lab1.mdf");
-                con.IntegratedSecurity = true;
+                SQLiteConnectionStringBuilder con = new SQLiteConnectionStringBuilder();
+                con.DataSource = Path.Combine(path, "lab1.db");
                 str = con.ConnectionString;
             }
             Database.Connection.ConnectionString = str;
+
+            SQLiteConnection connection = (SQLiteConnection)Database.Connection;
+            connection.Open();
+            using (SQLiteCommand command = new SQLiteCommand("create table if not exists Records (Id integer primary key autoincrement, Name text, Age integer not null, Date datetime not null, Cause text, Cell integer not null)", connection))
+            {
+                command.ExecuteNonQuery();
+            }
+            connection.Close();
         }
 
         public DbSet<Record> Records { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Record>().ToTable("Records", "main");
+        }
     }
 }

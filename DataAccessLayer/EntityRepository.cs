@@ -4,14 +4,6 @@ namespace DataAccessLayer
 {
     public class EntityRepository<T> : IRepository<T> where T : class, IDomainObject
     {
-        public EntityRepository()
-        {
-            using (DBContext db = new DBContext())
-            {
-                db.Database.CreateIfNotExists();
-            }
-        }
-
         public bool Add(T r)
         {
             if (r == null)
