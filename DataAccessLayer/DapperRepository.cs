@@ -1,15 +1,20 @@
 using Dapper;
 using Model;
 using System.Data.SQLite;
+using System.Reflection;
 
 namespace DataAccessLayer
 {
     /// <summary>
-    /// Репозиторий через Dapper (обычные SQL-запросы к таблице Records).
+    /// Репозиторий через Dapper (обычные SQL-запросы).
+    /// Таблица называется как класс с буквой s на конце (Record - Records),
+    /// столбцы называются как свойства класса.
     /// </summary>
     /// <typeparam name="T">Тип объекта, у которого есть ID</typeparam>
     public class DapperRepository<T> : IRepository<T> where T : class, IDomainObject
     {
+        string table = typeof(T).Name + "s";
+
         /// <summary>
         /// Создает таблицу в базе, если ее еще нет.
         /// </summary>
@@ -25,9 +30,25 @@ namespace DataAccessLayer
         {
             if (r == null)
                 return false;
+
+            string columns = "";
+            string values = "";
+            foreach (PropertyInfo p in typeof(T).GetProperties())
+            {
+                if (p.Name == "ID")
+                    continue;
+                if (columns != "")
+                {
+                    columns += ", ";
+                    values += ", ";
+                }
+                columns += p.Name;
+                values += "@" + p.Name;
+            }
+
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                string sql = "insert into Records (Name, Age, Date, Cause, Cell) values (@Name, @Age, @Date, @Cause, @Cell); select last_insert_rowid();";
+                string sql = "insert into " + table + " (" + columns + ") values (" + values + "); select last_insert_rowid();";
                 r.ID = con.ExecuteScalar<int>(sql, r);
             }
             return r.ID > 0;
@@ -40,7 +61,7 @@ namespace DataAccessLayer
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                return con.Execute("delete from Records where ID = @id", new { id = id }) > 0;
+                return con.Execute("delete from " + table + " where ID = @id", new { id = id }) > 0;
             }
         }
 
@@ -51,7 +72,7 @@ namespace DataAccessLayer
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                return new List<T>(con.Query<T>("select * from Records order by ID"));
+                return new List<T>(con.Query<T>("select * from " + table + " order by ID"));
             }
         }
 
@@ -62,7 +83,7 @@ namespace DataAccessLayer
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                return con.QueryFirstOrDefault<T>("select * from Records where ID = @id", new { id = id });
+                return con.QueryFirstOrDefault<T>("select * from " + table + " where ID = @id", new { id = id });
             }
         }
 
@@ -73,9 +94,20 @@ namespace DataAccessLayer
         {
             if (r == null)
                 return false;
+
+            string values = "";
+            foreach (PropertyInfo p in typeof(T).GetProperties())
+            {
+                if (p.Name == "ID")
+                    continue;
+                if (values != "")
+                    values += ", ";
+                values += p.Name + " = @" + p.Name;
+            }
+
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                string sql = "update Records set Name = @Name, Age = @Age, Date = @Date, Cause = @Cause, Cell = @Cell where ID = @ID";
+                string sql = "update " + table + " set " + values + " where ID = @ID";
                 return con.Execute(sql, r) > 0;
             }
         }
