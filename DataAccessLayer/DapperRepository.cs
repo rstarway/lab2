@@ -1,20 +1,14 @@
 using Dapper;
 using Model;
 using System.Data.SQLite;
-using System.Reflection;
 
 namespace DataAccessLayer
 {
     /// <summary>
-    /// Репозиторий через Dapper (обычные SQL-запросы).
-    /// Таблица называется как класс с буквой s на конце (Record - Records),
-    /// столбцы называются как свойства класса.
+    /// Репозиторий записей через Dapper (SQL-запросы к таблице Records).
     /// </summary>
-    /// <typeparam name="T">Тип объекта, у которого есть ID</typeparam>
-    public class DapperRepository<T> : IRepository<T> where T : class, IDomainObject
+    public class DapperRepository : IRepository<Record>
     {
-        string table = typeof(T).Name + "s";
-
         /// <summary>
         /// Создает таблицу в базе, если ее еще нет.
         /// </summary>
@@ -24,90 +18,63 @@ namespace DataAccessLayer
         }
 
         /// <summary>
-        /// Добавляет объект в базу и записывает ему новый ID.
+        /// Добавляет запись в базу и записывает ей новый ID.
         /// </summary>
-        public bool Add(T r)
+        public bool Add(Record r)
         {
             if (r == null)
                 return false;
-
-            string columns = "";
-            string values = "";
-            foreach (PropertyInfo p in typeof(T).GetProperties())
-            {
-                if (p.Name == "ID")
-                    continue;
-                if (columns != "")
-                {
-                    columns += ", ";
-                    values += ", ";
-                }
-                columns += p.Name;
-                values += "@" + p.Name;
-            }
-
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                string sql = "insert into " + table + " (" + columns + ") values (" + values + "); select last_insert_rowid();";
+                string sql = "insert into Records (Name, Age, Date, Cause, Cell) values (@Name, @Age, @Date, @Cause, @Cell); select last_insert_rowid();";
                 r.ID = con.ExecuteScalar<int>(sql, r);
             }
             return r.ID > 0;
         }
 
         /// <summary>
-        /// Удаляет объект с указанным ID.
+        /// Удаляет запись с указанным ID.
         /// </summary>
         public bool Delete(int id)
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                return con.Execute("delete from " + table + " where ID = @id", new { id = id }) > 0;
+                return con.Execute("delete from Records where ID = @id", new { id = id }) > 0;
             }
         }
 
         /// <summary>
-        /// Возвращает все объекты.
+        /// Возвращает все записи.
         /// </summary>
-        public List<T> ReadAll()
+        public List<Record> ReadAll()
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                return new List<T>(con.Query<T>("select * from " + table + " order by ID"));
+                return new List<Record>(con.Query<Record>("select * from Records order by ID"));
             }
         }
 
         /// <summary>
-        /// Возвращает объект с указанным ID или null.
+        /// Возвращает запись с указанным ID или null.
         /// </summary>
-        public T ReadById(int id)
+        public Record ReadById(int id)
         {
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                return con.QueryFirstOrDefault<T>("select * from " + table + " where ID = @id", new { id = id });
+                return con.QueryFirstOrDefault<Record>("select * from Records where ID = @id", new { id = id });
             }
         }
 
         /// <summary>
-        /// Сохраняет изменения объекта.
+        /// Сохраняет изменения записи.
         /// </summary>
-        public bool Update(T r)
+        public bool Update(Record r)
         {
             if (r == null)
                 return false;
-
-            string values = "";
-            foreach (PropertyInfo p in typeof(T).GetProperties())
-            {
-                if (p.Name == "ID")
-                    continue;
-                if (values != "")
-                    values += ", ";
-                values += p.Name + " = @" + p.Name;
-            }
-
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
-                string sql = "update " + table + " set " + values + " where ID = @ID";
+                string sql = "update Records set Name = @Name, Age = @Age, Date = @Date, Cause = @Cause, Cell = @Cell where ID = @ID";
                 return con.Execute(sql, r) > 0;
             }
         }

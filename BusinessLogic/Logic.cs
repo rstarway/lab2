@@ -16,7 +16,7 @@ namespace BusinessLogic
         public Logic()
         {
             repository = new EntityRepository<Record>();
-            // repository = new DapperRepository<Record>();
+            // repository = new DapperRepository();
         }
 
         /// <summary>
