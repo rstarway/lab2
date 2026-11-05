@@ -29,7 +29,7 @@ while (true)
         if (list.Count == 0)
             Console.WriteLine("Записей нет");
         foreach (Record r in list)
-            Console.WriteLine(r.ID + " | " + r.Name + " | " + r.Age + " | " + r.Date.ToShortDateString() + " | " + r.Cause + " | камера " + r.Cell);
+            Print(r);
         Console.WriteLine();
         Console.WriteLine("Свободные камеры: " + string.Join(", ", logic.FreeCells()));
         Console.WriteLine("===================================");
@@ -47,97 +47,33 @@ while (true)
         switch (s.Trim())
         {
             case "1":
-                Console.Write("ФИО: ");
-                string name = Console.ReadLine();
-                Console.Write("Возраст: ");
-                int age;
-                if (!int.TryParse(Console.ReadLine(), out age))
-                {
-                    Console.WriteLine("Возраст должен быть числом");
+                Record newRecord = AskRecord();
+                if (newRecord == null)
                     break;
-                }
-                Console.Write("Дата (дд.мм.гггг): ");
-                DateTime date;
-                if (!DateTime.TryParse(Console.ReadLine(), out date) || date.Year < 1900)
-                {
-                    Console.WriteLine("Неправильная дата");
-                    break;
-                }
-                Console.Write("Причина смерти: ");
-                string cause = Console.ReadLine();
-                Console.Write("Камера (1-" + logic.cells + "): ");
-                int cell;
-                if (!int.TryParse(Console.ReadLine(), out cell))
-                {
-                    Console.WriteLine("Камера должна быть числом");
-                    break;
-                }
-                string err = validator.Check(name, age, cause);
-                if (err != "")
-                {
-                    Console.WriteLine(err);
-                    break;
-                }
-                if (logic.Add(name.Trim(), age, date, cause.Trim(), cell))
+                if (logic.Add(newRecord.Name, newRecord.Age, newRecord.Date, newRecord.Cause, newRecord.Cell))
                     Console.WriteLine("Добавлено");
                 else
                     Console.WriteLine("Камера занята или нет такой");
                 break;
 
             case "2":
-                Console.Write("id: ");
-                int id;
-                if (!int.TryParse(Console.ReadLine(), out id))
-                {
-                    Console.WriteLine("id должен быть числом");
+                int? id = AskNumber("id: ", "id должен быть числом");
+                if (id == null)
                     break;
-                }
-                Console.Write("ФИО: ");
-                string name2 = Console.ReadLine();
-                Console.Write("Возраст: ");
-                int age2;
-                if (!int.TryParse(Console.ReadLine(), out age2))
-                {
-                    Console.WriteLine("Возраст должен быть числом");
+                Record changed = AskRecord();
+                if (changed == null)
                     break;
-                }
-                Console.Write("Дата (дд.мм.гггг): ");
-                DateTime date2;
-                if (!DateTime.TryParse(Console.ReadLine(), out date2) || date2.Year < 1900)
-                {
-                    Console.WriteLine("Неправильная дата");
-                    break;
-                }
-                Console.Write("Причина смерти: ");
-                string cause2 = Console.ReadLine();
-                Console.Write("Камера: ");
-                int cell2;
-                if (!int.TryParse(Console.ReadLine(), out cell2))
-                {
-                    Console.WriteLine("Камера должна быть числом");
-                    break;
-                }
-                string err2 = validator.Check(name2, age2, cause2);
-                if (err2 != "")
-                {
-                    Console.WriteLine(err2);
-                    break;
-                }
-                if (logic.Edit(id, name2.Trim(), age2, date2, cause2.Trim(), cell2))
+                if (logic.Edit(id.Value, changed.Name, changed.Age, changed.Date, changed.Cause, changed.Cell))
                     Console.WriteLine("Изменено");
                 else
                     Console.WriteLine("Не получилось");
                 break;
 
             case "3":
-                Console.Write("id: ");
-                int id2;
-                if (!int.TryParse(Console.ReadLine(), out id2))
-                {
-                    Console.WriteLine("id должен быть числом");
+                int? deleteId = AskNumber("id: ", "id должен быть числом");
+                if (deleteId == null)
                     break;
-                }
-                if (logic.Delete(id2))
+                if (logic.Delete(deleteId.Value))
                     Console.WriteLine("Удалено");
                 else
                     Console.WriteLine("Нет такой записи");
@@ -148,11 +84,11 @@ while (true)
                 string str = Console.ReadLine();
                 if (str == null)
                     str = "";
-                List<Record> res = logic.FindByCause(str.Trim());
-                if (res.Count == 0)
+                List<Record> found = logic.FindByCause(str.Trim());
+                if (found.Count == 0)
                     Console.WriteLine("Ничего не найдено");
-                foreach (Record r in res)
-                    Console.WriteLine(r.ID + " | " + r.Name + " | " + r.Age + " | " + r.Date.ToShortDateString() + " | " + r.Cause + " | камера " + r.Cell);
+                foreach (Record r in found)
+                    Print(r);
                 break;
 
             default:
@@ -173,4 +109,62 @@ while (true)
         if (a == null || a.Trim() == "0")
             break;
     }
+}
+
+void Print(Record r)
+{
+    Console.WriteLine(r.ID + " | " + r.Name + " | " + r.Age + " | " + r.Date.ToShortDateString() + " | " + r.Cause + " | камера " + r.Cell);
+}
+
+// Спрашивает число. Если ввели не число, пишет ошибку и возвращает null.
+int? AskNumber(string question, string error)
+{
+    Console.Write(question);
+    int n;
+    if (!int.TryParse(Console.ReadLine(), out n))
+    {
+        Console.WriteLine(error);
+        return null;
+    }
+    return n;
+}
+
+// Спрашивает все поля записи. Если что-то введено неверно, пишет ошибку и возвращает null.
+Record AskRecord()
+{
+    Record r = new Record();
+    Console.Write("ФИО: ");
+    r.Name = Console.ReadLine();
+
+    int? age = AskNumber("Возраст: ", "Возраст должен быть числом");
+    if (age == null)
+        return null;
+    r.Age = age.Value;
+
+    Console.Write("Дата (дд.мм.гггг): ");
+    DateTime date;
+    if (!DateTime.TryParse(Console.ReadLine(), out date))
+    {
+        Console.WriteLine("Неправильная дата");
+        return null;
+    }
+    r.Date = date;
+
+    Console.Write("Причина смерти: ");
+    r.Cause = Console.ReadLine();
+
+    int? cell = AskNumber("Камера (1-" + logic.Cells + "): ", "Камера должна быть числом");
+    if (cell == null)
+        return null;
+    r.Cell = cell.Value;
+
+    string err = validator.Check(r.Name, r.Age, r.Date, r.Cause);
+    if (err != "")
+    {
+        Console.WriteLine(err);
+        return null;
+    }
+    r.Name = r.Name.Trim();
+    r.Cause = r.Cause.Trim();
+    return r;
 }

@@ -26,9 +26,9 @@ namespace BusinessLogic
         }
 
         /// <summary>
-        /// Общее количество холодильных камер (номера от 1 до cells).
+        /// Общее количество холодильных камер (номера от 1 до Cells).
         /// </summary>
-        public int cells = 10;
+        public int Cells { get; } = 10;
 
         /// <summary>
         /// Добавляет новую запись о поступлении.
@@ -38,12 +38,12 @@ namespace BusinessLogic
         /// <param name="date">Дата поступления</param>
         /// <param name="cause">Причина смерти</param>
         /// <param name="cell">Номер камеры</param>
-        /// <returns>true, если запись добавлена; false, если поля неверны, камера занята или такой камеры нет.</returns>
+        /// <returns>true, если запись добавлена.</returns>
         public bool Add(string name, int age, DateTime date, string cause, int cell)
         {
-            if (validator.Check(name, age, cause) != "")
+            if (validator.Check(name, age, date, cause) != "")
                 return false;
-            if (!cellService.CanUse(cell, 0, cells))
+            if (!cellService.CanUse(cell, 0, Cells))
                 return false;
 
             Record r = new Record();
@@ -64,6 +64,14 @@ namespace BusinessLogic
         }
 
         /// <summary>
+        /// Возвращает запись с указанным id или null, если такой нет.
+        /// </summary>
+        public Record GetById(int id)
+        {
+            return repository.ReadById(id);
+        }
+
+        /// <summary>
         /// Изменяет запись с указанным id.
         /// </summary>
         /// <param name="id">Номер изменяемой записи</param>
@@ -72,12 +80,12 @@ namespace BusinessLogic
         /// <param name="date">Дата поступления</param>
         /// <param name="cause">Причина смерти</param>
         /// <param name="cell">Номер камеры</param>
-        /// <returns>true, если запись изменена; false, если поля неверны, записи нет, камера занята другой записью или такой камеры нет.</returns>
+        /// <returns>true, если запись изменена.</returns>
         public bool Edit(int id, string name, int age, DateTime date, string cause, int cell)
         {
-            if (validator.Check(name, age, cause) != "")
+            if (validator.Check(name, age, date, cause) != "")
                 return false;
-            if (!cellService.CanUse(cell, id, cells))
+            if (!cellService.CanUse(cell, id, Cells))
                 return false;
 
             Record r = repository.ReadById(id);
@@ -95,7 +103,7 @@ namespace BusinessLogic
         /// Удаляет запись с указанным id.
         /// </summary>
         /// <param name="id">Номер удаляемой записи</param>
-        /// <returns>true, если запись удалена; false, если такой записи нет.</returns>
+        /// <returns>true, если запись удалена.</returns>
         public bool Delete(int id)
         {
             return repository.Delete(id);
@@ -108,6 +116,8 @@ namespace BusinessLogic
         /// <returns>Список найденных записей.</returns>
         public List<Record> FindByCause(string cause)
         {
+            if (cause == null)
+                cause = "";
             List<Record> list = repository.ReadAll();
             List<Record> res = new List<Record>();
             foreach (Record r in list)
@@ -131,7 +141,7 @@ namespace BusinessLogic
         /// </summary>
         public List<int> FreeCells()
         {
-            return cellService.FreeCells(cells);
+            return cellService.FreeCells(Cells);
         }
     }
 }

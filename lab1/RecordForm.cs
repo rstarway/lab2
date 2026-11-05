@@ -58,7 +58,8 @@ namespace lab1
             Text = "Изменение записи";
             textBox1.Text = r.Name;
             textBox2.Text = r.Age.ToString();
-            dateTimePicker1.Value = r.Date;
+            if (r.Date >= dateTimePicker1.MinDate && r.Date <= dateTimePicker1.MaxDate)
+                dateTimePicker1.Value = r.Date;
             textBox3.Text = r.Cause;
             textBox4.Text = r.Cell.ToString();
         }
@@ -76,7 +77,7 @@ namespace lab1
                 return;
             }
 
-            string err = validator.Check(textBox1.Text, age, textBox3.Text);
+            string err = validator.Check(textBox1.Text, age, dateTimePicker1.Value, textBox3.Text);
             if (err != "")
             {
                 MessageBox.Show(err);

@@ -41,7 +41,7 @@ namespace lab1
                 if (logic.Add(f.name, f.age, f.date, f.cause, f.cell))
                     Fill(logic.GetAll());
                 else
-                    MessageBox.Show("Камера занята или нет такой (1-" + logic.cells + ")");
+                    MessageBox.Show("Камера занята или нет такой (1-" + logic.Cells + ")");
             }
         }
 
@@ -54,12 +54,7 @@ namespace lab1
             }
 
             int id = Convert.ToInt32(dataGridView1.CurrentRow.Cells[0].Value);
-            Record r = null;
-            foreach (Record x in logic.GetAll())
-            {
-                if (x.ID == id)
-                    r = x;
-            }
+            Record r = logic.GetById(id);
             if (r == null)
             {
                 MessageBox.Show("Записи уже нет, обнови таблицу");
