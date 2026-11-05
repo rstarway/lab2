@@ -11,15 +11,6 @@ namespace BusinessLogic
         IRepository<Record> repository;
 
         /// <summary>
-        /// Создает репозиторий для работы с записями.
-        /// </summary>
-        public Logic()
-        {
-            repository = new EntityRepository<Record>();
-            // repository = new DapperRepository();
-        }
-
-        /// <summary>
         /// Создает логику с готовым репозиторием, его передает контейнер.
         /// </summary>
         /// <param name="repository">Репозиторий записей</param>
