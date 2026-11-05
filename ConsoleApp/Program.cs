@@ -59,7 +59,7 @@ while (true)
                 }
                 Console.Write("Дата (дд.мм.гггг): ");
                 DateTime date;
-                if (!DateTime.TryParse(Console.ReadLine(), out date))
+                if (!DateTime.TryParse(Console.ReadLine(), out date) || date.Year < 1900)
                 {
                     Console.WriteLine("Неправильная дата");
                     break;
@@ -108,7 +108,7 @@ while (true)
                 }
                 Console.Write("Дата (дд.мм.гггг): ");
                 DateTime date2;
-                if (!DateTime.TryParse(Console.ReadLine(), out date2))
+                if (!DateTime.TryParse(Console.ReadLine(), out date2) || date2.Year < 1900)
                 {
                     Console.WriteLine("Неправильная дата");
                     break;
