@@ -7,7 +7,7 @@ namespace BusinessLogic
     /// <summary>
     /// Настройки контейнера: какой репозиторий подставлять в Logic.
     /// </summary>
-    public class ConfigModule : NinjectModule
+    public class SimpleConfigModule : NinjectModule
     {
         /// <summary>
         /// Связывает интерфейс репозитория с реализацией. Объект репозитория один на всю программу (Singleton).

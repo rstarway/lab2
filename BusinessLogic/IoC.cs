@@ -7,7 +7,7 @@ namespace BusinessLogic
     /// </summary>
     public static class IoC
     {
-        static IKernel kernel = new StandardKernel(new ConfigModule());
+        static IKernel kernel = new StandardKernel(new SimpleConfigModule());
 
         /// <summary>
         /// Создает Logic и подставляет в него репозиторий из контейнера.
