@@ -20,6 +20,15 @@ namespace BusinessLogic
         }
 
         /// <summary>
+        /// Создает логику с готовым репозиторием, его передает контейнер.
+        /// </summary>
+        /// <param name="repository">Репозиторий записей</param>
+        public Logic(IRepository<Record> repository)
+        {
+            this.repository = repository;
+        }
+
+        /// <summary>
         /// Общее количество холодильных камер (номера от 1 до cells).
         /// </summary>
         public int cells = 10;
