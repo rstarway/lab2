@@ -3,10 +3,16 @@ using Model;
 
 namespace lab1
 {
+    /// <summary>
+    /// Главное окно: таблица записей, поиск и камеры.
+    /// </summary>
     public partial class Form1 : Form
     {
         Logic logic = IoC.GetLogic();
 
+        /// <summary>
+        /// Открывает окно и загружает записи из базы.
+        /// </summary>
         public Form1()
         {
             InitializeComponent();

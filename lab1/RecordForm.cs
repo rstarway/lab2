@@ -3,22 +3,51 @@ using Model;
 
 namespace lab1
 {
+    /// <summary>
+    /// Окно карточки записи: ввод и проверка данных.
+    /// </summary>
     public partial class RecordForm : Form
     {
         RecordValidator validator = IoC.GetValidator();
 
+        /// <summary>
+        /// ФИО после нажатия ОК.
+        /// </summary>
         public string name;
+
+        /// <summary>
+        /// Возраст после нажатия ОК.
+        /// </summary>
         public int age;
+
+        /// <summary>
+        /// Дата поступления после нажатия ОК.
+        /// </summary>
         public DateTime date;
+
+        /// <summary>
+        /// Причина смерти после нажатия ОК.
+        /// </summary>
         public string cause;
+
+        /// <summary>
+        /// Номер камеры после нажатия ОК.
+        /// </summary>
         public int cell;
 
+        /// <summary>
+        /// Открывает пустую карточку для новой записи.
+        /// </summary>
         public RecordForm()
         {
             InitializeComponent();
             Text = "Новая запись";
         }
 
+        /// <summary>
+        /// Открывает карточку с данными записи для изменения.
+        /// </summary>
+        /// <param name="r">Изменяемая запись</param>
         public RecordForm(Record r)
         {
             InitializeComponent();
