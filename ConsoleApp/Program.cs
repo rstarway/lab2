@@ -1,7 +1,7 @@
 using BusinessLogic;
 using Model;
 
-Logic logic = new Logic();
+Logic logic = IoC.GetLogic();
 
 while (true)
 {
