@@ -9,7 +9,7 @@ namespace DataAccessLayer
     public interface IWriteRepository<T> where T : class, IDomainObject
     {
         /// <summary>
-        /// Добавляет объект в базу. После добавления у объекта заполняется ID.
+        /// Добавляет новый объект с ID = 0 в базу. После добавления у объекта заполняется новый ID.
         /// </summary>
         /// <returns>true, если объект добавлен; false, если передан null.</returns>
         bool Add(T r);

@@ -9,7 +9,7 @@ namespace DataAccessLayer
     public interface IReadRepository<T> where T : class, IDomainObject
     {
         /// <summary>
-        /// Возвращает все объекты из базы.
+        /// Возвращает все объекты из базы по возрастанию ID. Если записей нет, возвращает пустой список.
         /// </summary>
         List<T> ReadAll();
 

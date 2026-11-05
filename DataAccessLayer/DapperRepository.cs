@@ -44,7 +44,7 @@ namespace DataAccessLayer
         }
 
         /// <summary>
-        /// Возвращает все записи.
+        /// Возвращает все записи по возрастанию ID.
         /// </summary>
         public List<Record> ReadAll()
         {

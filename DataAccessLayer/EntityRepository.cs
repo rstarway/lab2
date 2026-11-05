@@ -46,13 +46,26 @@ namespace DataAccessLayer
         }
 
         /// <summary>
-        /// Возвращает все объекты.
+        /// Возвращает все объекты по возрастанию ID.
         /// </summary>
         public List<T> ReadAll()
         {
             using (DBContext db = new DBContext())
             {
-                return new List<T>(db.Set<T>());
+                List<T> list = new List<T>(db.Set<T>());
+                for (int i = 0; i < list.Count; i++)
+                {
+                    for (int j = i + 1; j < list.Count; j++)
+                    {
+                        if (list[i].ID > list[j].ID)
+                        {
+                            T r = list[i];
+                            list[i] = list[j];
+                            list[j] = r;
+                        }
+                    }
+                }
+                return list;
             }
         }
 
