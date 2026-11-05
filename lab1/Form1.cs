@@ -5,7 +5,7 @@ namespace lab1
 {
     public partial class Form1 : Form
     {
-        Logic logic = new Logic();
+        Logic logic = IoC.GetLogic();
 
         public Form1()
         {
