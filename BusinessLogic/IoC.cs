@@ -16,5 +16,13 @@ namespace BusinessLogic
         {
             return kernel.Get<Logic>();
         }
+
+        /// <summary>
+        /// Возвращает проверку полей записи для форм и консоли.
+        /// </summary>
+        public static RecordValidator GetValidator()
+        {
+            return kernel.Get<RecordValidator>();
+        }
     }
 }

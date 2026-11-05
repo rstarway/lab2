@@ -41,7 +41,7 @@ namespace BusinessLogic
         /// <returns>true, если запись добавлена; false, если поля неверны, камера занята или такой камеры нет.</returns>
         public bool Add(string name, int age, DateTime date, string cause, int cell)
         {
-            if (!validator.Check(name, age, cause))
+            if (validator.Check(name, age, cause) != "")
                 return false;
             if (!cellService.CanUse(cell, 0, cells))
                 return false;
@@ -75,7 +75,7 @@ namespace BusinessLogic
         /// <returns>true, если запись изменена; false, если поля неверны, записи нет, камера занята другой записью или такой камеры нет.</returns>
         public bool Edit(int id, string name, int age, DateTime date, string cause, int cell)
         {
-            if (!validator.Check(name, age, cause))
+            if (validator.Check(name, age, cause) != "")
                 return false;
             if (!cellService.CanUse(cell, id, cells))
                 return false;

@@ -2,9 +2,11 @@ using BusinessLogic;
 using Model;
 
 Logic logic;
+RecordValidator validator;
 try
 {
     logic = IoC.GetLogic();
+    validator = IoC.GetValidator();
 }
 catch (Exception e)
 {
@@ -45,16 +47,11 @@ while (true)
             case "1":
                 Console.Write("ФИО: ");
                 string name = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    Console.WriteLine("ФИО не может быть пустым");
-                    break;
-                }
                 Console.Write("Возраст: ");
                 int age;
-                if (!int.TryParse(Console.ReadLine(), out age) || age < 0 || age > 120)
+                if (!int.TryParse(Console.ReadLine(), out age))
                 {
-                    Console.WriteLine("Возраст должен быть числом от 0 до 120");
+                    Console.WriteLine("Возраст должен быть числом");
                     break;
                 }
                 Console.Write("Дата (дд.мм.гггг): ");
@@ -66,16 +63,17 @@ while (true)
                 }
                 Console.Write("Причина смерти: ");
                 string cause = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(cause))
-                {
-                    Console.WriteLine("Причина не может быть пустой");
-                    break;
-                }
                 Console.Write("Камера (1-" + logic.cells + "): ");
                 int cell;
                 if (!int.TryParse(Console.ReadLine(), out cell))
                 {
                     Console.WriteLine("Камера должна быть числом");
+                    break;
+                }
+                string err = validator.Check(name, age, cause);
+                if (err != "")
+                {
+                    Console.WriteLine(err);
                     break;
                 }
                 if (logic.Add(name.Trim(), age, date, cause.Trim(), cell))
@@ -94,16 +92,11 @@ while (true)
                 }
                 Console.Write("ФИО: ");
                 string name2 = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(name2))
-                {
-                    Console.WriteLine("ФИО не может быть пустым");
-                    break;
-                }
                 Console.Write("Возраст: ");
                 int age2;
-                if (!int.TryParse(Console.ReadLine(), out age2) || age2 < 0 || age2 > 120)
+                if (!int.TryParse(Console.ReadLine(), out age2))
                 {
-                    Console.WriteLine("Возраст должен быть числом от 0 до 120");
+                    Console.WriteLine("Возраст должен быть числом");
                     break;
                 }
                 Console.Write("Дата (дд.мм.гггг): ");
@@ -115,16 +108,17 @@ while (true)
                 }
                 Console.Write("Причина смерти: ");
                 string cause2 = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(cause2))
-                {
-                    Console.WriteLine("Причина не может быть пустой");
-                    break;
-                }
                 Console.Write("Камера: ");
                 int cell2;
                 if (!int.TryParse(Console.ReadLine(), out cell2))
                 {
                     Console.WriteLine("Камера должна быть числом");
+                    break;
+                }
+                string err2 = validator.Check(name2, age2, cause2);
+                if (err2 != "")
+                {
+                    Console.WriteLine(err2);
                     break;
                 }
                 if (logic.Edit(id, name2.Trim(), age2, date2, cause2.Trim(), cell2))

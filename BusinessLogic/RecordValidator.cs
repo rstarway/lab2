@@ -8,13 +8,16 @@ namespace BusinessLogic
         /// <summary>
         /// Проверяет, что ФИО и причина заполнены, а возраст от 0 до 120.
         /// </summary>
-        public bool Check(string name, int age, string cause)
+        /// <returns>Текст ошибки или пустая строка, если все верно.</returns>
+        public string Check(string name, int age, string cause)
         {
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(cause))
-                return false;
+            if (string.IsNullOrWhiteSpace(name))
+                return "Заполни ФИО";
+            if (string.IsNullOrWhiteSpace(cause))
+                return "Заполни причину смерти";
             if (age < 0 || age > 120)
-                return false;
-            return true;
+                return "Возраст должен быть от 0 до 120";
+            return "";
         }
     }
 }
