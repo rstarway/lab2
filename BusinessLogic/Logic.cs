@@ -9,14 +9,20 @@ namespace BusinessLogic
     public class Logic
     {
         IRepository<Record> repository;
+        CellService cellService;
+        RecordValidator validator;
 
         /// <summary>
-        /// Создает логику с готовым репозиторием, его передает контейнер.
+        /// Получает репозиторий и классы проверки из контейнера.
         /// </summary>
         /// <param name="repository">Репозиторий записей</param>
-        public Logic(IRepository<Record> repository)
+        /// <param name="cellService">Проверка и подсчет камер</param>
+        /// <param name="validator">Проверка полей записи</param>
+        public Logic(IRepository<Record> repository, CellService cellService, RecordValidator validator)
         {
             this.repository = repository;
+            this.cellService = cellService;
+            this.validator = validator;
         }
 
         /// <summary>
@@ -32,17 +38,13 @@ namespace BusinessLogic
         /// <param name="date">Дата поступления</param>
         /// <param name="cause">Причина смерти</param>
         /// <param name="cell">Номер камеры</param>
-        /// <returns>true, если запись добавлена; false, если камера занята или такой камеры нет.</returns>
+        /// <returns>true, если запись добавлена; false, если поля неверны, камера занята или такой камеры нет.</returns>
         public bool Add(string name, int age, DateTime date, string cause, int cell)
         {
-            if (cell < 1 || cell > cells)
+            if (!validator.Check(name, age, cause))
                 return false;
-            List<Record> list = repository.ReadAll();
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Cell == cell)
-                    return false;
-            }
+            if (!cellService.CanUse(cell, 0, cells))
+                return false;
 
             Record r = new Record();
             r.Name = name;
@@ -70,17 +72,13 @@ namespace BusinessLogic
         /// <param name="date">Дата поступления</param>
         /// <param name="cause">Причина смерти</param>
         /// <param name="cell">Номер камеры</param>
-        /// <returns>true, если запись изменена; false, если записи нет, камера занята другой записью или такой камеры нет.</returns>
+        /// <returns>true, если запись изменена; false, если поля неверны, записи нет, камера занята другой записью или такой камеры нет.</returns>
         public bool Edit(int id, string name, int age, DateTime date, string cause, int cell)
         {
-            if (cell < 1 || cell > cells)
+            if (!validator.Check(name, age, cause))
                 return false;
-            List<Record> list = repository.ReadAll();
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Cell == cell && list[i].ID != id)
-                    return false;
-            }
+            if (!cellService.CanUse(cell, id, cells))
+                return false;
 
             Record r = repository.ReadById(id);
             if (r == null)
@@ -125,12 +123,7 @@ namespace BusinessLogic
         /// </summary>
         public List<int> BusyCells()
         {
-            List<Record> list = repository.ReadAll();
-            List<int> res = new List<int>();
-            foreach (Record r in list)
-                res.Add(r.Cell);
-            res.Sort();
-            return res;
+            return cellService.BusyCells();
         }
 
         /// <summary>
@@ -138,20 +131,7 @@ namespace BusinessLogic
         /// </summary>
         public List<int> FreeCells()
         {
-            List<Record> list = repository.ReadAll();
-            List<int> res = new List<int>();
-            for (int i = 1; i <= cells; i++)
-            {
-                bool busy = false;
-                foreach (Record r in list)
-                {
-                    if (r.Cell == i)
-                        busy = true;
-                }
-                if (!busy)
-                    res.Add(i);
-            }
-            return res;
+            return cellService.FreeCells(cells);
         }
     }
 }
