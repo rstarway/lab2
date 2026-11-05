@@ -52,17 +52,11 @@ namespace BusinessLogic
         /// </summary>
         public List<int> FreeCells(int cells)
         {
-            List<Record> list = repository.ReadAll();
+            List<int> busy = BusyCells();
             List<int> res = new List<int>();
             for (int i = 1; i <= cells; i++)
             {
-                bool busy = false;
-                foreach (Record r in list)
-                {
-                    if (r.Cell == i)
-                        busy = true;
-                }
-                if (!busy)
+                if (!busy.Contains(i))
                     res.Add(i);
             }
             return res;

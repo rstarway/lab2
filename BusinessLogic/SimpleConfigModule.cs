@@ -10,12 +10,11 @@ namespace BusinessLogic
     public class SimpleConfigModule : NinjectModule
     {
         /// <summary>
-        /// Связывает интерфейс репозитория с реализацией. Объект репозитория один на всю программу (Singleton).
+        /// Связывает интерфейс репозитория с реализацией. Объект репозитория один на всю программу (Singleton). Чтобы перейти на Dapper, замените EntityRepository<Record> на DapperRepository.
         /// </summary>
         public override void Load()
         {
             Bind<IRepository<Record>, IReadRepository<Record>>().To<EntityRepository<Record>>().InSingletonScope();
-            // Bind<IRepository<Record>, IReadRepository<Record>>().To<DapperRepository>().InSingletonScope();
         }
     }
 }

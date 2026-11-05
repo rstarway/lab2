@@ -53,18 +53,7 @@ namespace DataAccessLayer
             using (DBContext db = new DBContext())
             {
                 List<T> list = new List<T>(db.Set<T>());
-                for (int i = 0; i < list.Count; i++)
-                {
-                    for (int j = i + 1; j < list.Count; j++)
-                    {
-                        if (list[i].ID > list[j].ID)
-                        {
-                            T r = list[i];
-                            list[i] = list[j];
-                            list[j] = r;
-                        }
-                    }
-                }
+                list.Sort((a, b) => a.ID.CompareTo(b.ID));
                 return list;
             }
         }
