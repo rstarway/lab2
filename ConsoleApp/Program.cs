@@ -1,12 +1,14 @@
 using BusinessLogic;
 using Model;
+using Ninject;
 
 Logic logic;
 RecordValidator validator;
 try
 {
-    logic = IoC.GetLogic();
-    validator = IoC.GetValidator();
+    IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+    logic = ninjectKernel.Get<Logic>();
+    validator = ninjectKernel.Get<RecordValidator>();
 }
 catch (Exception e)
 {

@@ -8,7 +8,7 @@ namespace lab1
     /// </summary>
     public partial class RecordForm : Form
     {
-        RecordValidator validator = IoC.GetValidator();
+        RecordValidator validator;
 
         /// <summary>
         /// ФИО после нажатия ОК.
@@ -38,19 +38,23 @@ namespace lab1
         /// <summary>
         /// Открывает пустую карточку для новой записи.
         /// </summary>
-        public RecordForm()
+        /// <param name="validator">Проверка полей записи</param>
+        public RecordForm(RecordValidator validator)
         {
             InitializeComponent();
+            this.validator = validator;
             Text = "Новая запись";
         }
 
         /// <summary>
         /// Открывает карточку с данными записи для изменения.
         /// </summary>
+        /// <param name="validator">Проверка полей записи</param>
         /// <param name="r">Изменяемая запись</param>
-        public RecordForm(Record r)
+        public RecordForm(RecordValidator validator, Record r)
         {
             InitializeComponent();
+            this.validator = validator;
             Text = "Изменение записи";
             textBox1.Text = r.Name;
             textBox2.Text = r.Age.ToString();

@@ -1,5 +1,6 @@
 using BusinessLogic;
 using Model;
+using Ninject;
 
 namespace lab1
 {
@@ -8,7 +9,9 @@ namespace lab1
     /// </summary>
     public partial class Form1 : Form
     {
-        Logic logic = IoC.GetLogic();
+        IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
+        Logic logic;
+        RecordValidator validator;
 
         /// <summary>
         /// Открывает окно и загружает записи из базы.
@@ -16,6 +19,8 @@ namespace lab1
         public Form1()
         {
             InitializeComponent();
+            logic = ninjectKernel.Get<Logic>();
+            validator = ninjectKernel.Get<RecordValidator>();
             Fill(logic.GetAll());
         }
 
@@ -30,7 +35,7 @@ namespace lab1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            RecordForm f = new RecordForm();
+            RecordForm f = new RecordForm(validator);
             if (f.ShowDialog() == DialogResult.OK)
             {
                 if (logic.Add(f.name, f.age, f.date, f.cause, f.cell))
@@ -62,7 +67,7 @@ namespace lab1
                 return;
             }
 
-            RecordForm f = new RecordForm(r);
+            RecordForm f = new RecordForm(validator, r);
             if (f.ShowDialog() == DialogResult.OK)
             {
                 if (logic.Edit(id, f.name, f.age, f.date, f.cause, f.cell))
