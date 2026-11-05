@@ -114,7 +114,7 @@ namespace BusinessLogic
             List<Record> res = new List<Record>();
             foreach (Record r in list)
             {
-                if (r.Cause.ToLower().Contains(cause.ToLower()))
+                if (r.Cause != null && r.Cause.ToLower().Contains(cause.ToLower()))
                     res.Add(r);
             }
             return res;
