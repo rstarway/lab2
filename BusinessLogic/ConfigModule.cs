@@ -14,8 +14,8 @@ namespace BusinessLogic
         /// </summary>
         public override void Load()
         {
-            Bind<IRepository<Record>>().To<EntityRepository<Record>>().InSingletonScope();
-            // Bind<IRepository<Record>>().To<DapperRepository>().InSingletonScope();
+            Bind<IRepository<Record>, IReadRepository<Record>>().To<EntityRepository<Record>>().InSingletonScope();
+            // Bind<IRepository<Record>, IReadRepository<Record>>().To<DapperRepository>().InSingletonScope();
         }
     }
 }
