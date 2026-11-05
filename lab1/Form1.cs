@@ -49,6 +49,12 @@ namespace lab1
                 if (x.ID == id)
                     r = x;
             }
+            if (r == null)
+            {
+                MessageBox.Show("Записи уже нет, обнови таблицу");
+                Fill(logic.GetAll());
+                return;
+            }
 
             RecordForm f = new RecordForm(r);
             if (f.ShowDialog() == DialogResult.OK)
@@ -70,7 +76,8 @@ namespace lab1
 
             if (MessageBox.Show("Точно удалить?", "Удаление", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                logic.Delete(Convert.ToInt32(dataGridView1.CurrentRow.Cells[0].Value));
+                if (!logic.Delete(Convert.ToInt32(dataGridView1.CurrentRow.Cells[0].Value)))
+                    MessageBox.Show("Записи уже нет");
                 Fill(logic.GetAll());
             }
         }
