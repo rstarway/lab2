@@ -1,7 +1,13 @@
 namespace lab1
 {
+    /// <summary>
+    /// Точка входа приложения с формами.
+    /// </summary>
     internal static class Program
     {
+        /// <summary>
+        /// Запускает главное окно. Если база не открылась, показывает сообщение и выходит.
+        /// </summary>
         [STAThread]
         static void Main()
         {
