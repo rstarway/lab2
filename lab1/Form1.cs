@@ -10,7 +10,7 @@ namespace lab1
     public partial class Form1 : Form
     {
         IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
-        Logic logic;
+        ILogic logic;
         RecordValidator validator;
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace lab1
         public Form1()
         {
             InitializeComponent();
-            logic = ninjectKernel.Get<Logic>();
+            logic = ninjectKernel.Get<ILogic>();
             validator = ninjectKernel.Get<RecordValidator>();
             Fill(logic.GetAll());
         }

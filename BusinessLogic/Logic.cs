@@ -6,7 +6,7 @@ namespace BusinessLogic
     /// <summary>
     /// Бизнес-логика учета поступлений: работает с записями через репозиторий.
     /// </summary>
-    public class Logic
+    public class Logic : ILogic
     {
         IRepository<Record> repository;
         CellService cellService;
