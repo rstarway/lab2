@@ -5,14 +5,14 @@ using System.Data.SQLite;
 namespace DataAccessLayer
 {
     /// <summary>
-    /// Репозиторий записей через Dapper (SQL-запросы к таблице Records).
+    /// Добавление, изменение и удаление записей через Dapper (SQL-запросы к таблице Records).
     /// </summary>
-    public class DapperRepository : IRepository<Record>
+    public class DapperWriteRepository : IWriteRepository<Record>
     {
         /// <summary>
         /// Создает таблицу в базе, если ее еще нет.
         /// </summary>
-        public DapperRepository()
+        public DapperWriteRepository()
         {
             DBConnection.CreateTable();
         }
@@ -40,28 +40,6 @@ namespace DataAccessLayer
             using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
             {
                 return con.Execute("delete from Records where ID = @id", new { id = id }) > 0;
-            }
-        }
-
-        /// <summary>
-        /// Возвращает все записи по возрастанию ID.
-        /// </summary>
-        public List<Record> ReadAll()
-        {
-            using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
-            {
-                return new List<Record>(con.Query<Record>("select * from Records order by ID"));
-            }
-        }
-
-        /// <summary>
-        /// Возвращает запись с указанным ID или null.
-        /// </summary>
-        public Record ReadById(int id)
-        {
-            using (SQLiteConnection con = new SQLiteConnection(DBConnection.str))
-            {
-                return con.QueryFirstOrDefault<Record>("select * from Records where ID = @id", new { id = id });
             }
         }
 

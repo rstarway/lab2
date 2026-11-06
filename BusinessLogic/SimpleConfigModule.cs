@@ -5,16 +5,19 @@ using Ninject.Modules;
 namespace BusinessLogic
 {
     /// <summary>
-    /// Настройки контейнера: какой репозиторий подставлять в Logic.
+    /// Настройки контейнера: какие репозитории подставлять в Logic и CellService.
     /// </summary>
     public class SimpleConfigModule : NinjectModule
     {
         /// <summary>
-        /// Связывает интерфейс репозитория с реализацией. Объект репозитория один на всю программу (Singleton). Чтобы перейти на Dapper, замените EntityRepository<Record> на DapperRepository.
+        /// Связывает интерфейсы репозиториев с реализациями. Каждый объект один на всю программу (Singleton).
+        /// Чтобы перейти на Dapper, замените EntityReadRepository и EntityWriteRepository на DapperReadRepository и DapperWriteRepository.
         /// </summary>
         public override void Load()
         {
-            Bind<IRepository<Record>, IReadRepository<Record>>().To<EntityRepository<Record>>().InSingletonScope();
+            Bind<IReadRepository<Record>>().To<EntityReadRepository<Record>>().InSingletonScope();
+            Bind<IWriteRepository<Record>>().To<EntityWriteRepository<Record>>().InSingletonScope();
+            Bind<IRepository<Record>>().To<Repository<Record>>().InSingletonScope();
         }
     }
 }
